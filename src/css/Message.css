@@ -1,0 +1,99 @@
+.login-card {
+    -webkit-box-shadow: 10px 10px 20px 5px rgba(100, 100, 100, 0.5);
+    -moz-box-shadow: 10px 10px 20px 5px rgba(100, 100, 100, 0.5);
+    box-shadow: 10px 10px 20px 5px rgba(100, 100, 100, 0.5);
+    border-radius: 15px 15px 15px 15px;
+    -moz-border-radius: 15px 15px 15px 15px;
+    -webkit-border-radius: 15px 15px 15px 15px;
+    border: 0px solid #ffffff;
+}
+
+.min-h-3\/4 {
+    min-height: 75%;
+}
+
+.min-w-1\/4 {
+    min-width: 25%;
+}
+
+.min-w-9 {
+    min-width: 2.25rem;
+}
+
+.EmojiPickerReact li.epr-emoji-category>.epr-emoji-category-content {
+    margin: 0;
+    padding-right: 10px;
+
+}
+.EmojiPickerReact .epr-preview {
+    display: none !important;
+}
+.epr-skin-tones{
+  display: none !important;
+}
+.emoji-container{
+  filter: drop-shadow(0px 2px 8px rgba(0,0,0,0.32));
+  border: none;
+  
+}
+.emoji-container::before {
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: -10px;
+  right: 14px;
+  width: 10px;
+  height: 10px;
+  /* background-color: background.paper, */
+  transform: translateY(-50%) rotate(45deg);
+  z-index: 0;
+  /* border: 1px black solid; */
+  background: white;
+}
+/* 
+.message-container:has(.sender)+.message-container:has(.sender)>.sender>.content{
+    border-top-right-radius: 10px;
+    
+}
+
+.message-container:has(.sender):first-of-type+.message-container:has(.sender)>.sender>.content{
+    border-bottom-right-radius: 10px;
+}
+.message-container:has(.reciver) +.message-container:has(.reciver)>.reciver>.content {
+    border-top-left-radius: 10px;
+}
+ */
+ /* .emoji {
+    position: relative;
+  }
+  .emoji>svg {
+    font-size: 1.5rem;
+    color: #ffff00c8;
+    cursor: pointer;
+  }
+  .emoji>.emoji-picker-react {
+    position: absolute;
+    top: -350px;
+    background-color: #080420;
+    box-shadow: 0 5px 10px #9a86f3;
+    border-color: #9a86f3;
+    
+  }
+  .emoji>.emoji-picker-react>.emoji-scroll-wrapper::-webkit-scrollbar {
+    background-color: #080420;
+    width: 5px;
+    
+  }
+  .emoji>.emoji-picker-react>.emoji-scroll-wrapper::-webkit-scrollbar>-thumb {
+    background-color: #9a86f3;
+  }
+  .emoji>.emoji-picker-react>.emoji-categories>button {
+      filter: contrast(0);
+  }
+  .emoji>.emoji-picker-react>.emoji-search {
+    background-color: transparent;
+    border-color: #9a86f3;
+  }
+  .emoji>.emoji-picker-react>.emoji-group:before {
+    background-color: #080420;
+  } */
