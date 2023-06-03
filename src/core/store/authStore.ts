@@ -14,15 +14,15 @@ export const useAuthStore = create<IAuth>()(
       fetchSignin: async (data) => {
         const response = await signin(data);
 
-        if (response.status == 200) {
-          const decode_token: IResAuth = jwt(response.data.access_token);
-          set({
-            access_token: response.data.access_token,
-            username: decode_token.username,
-            id: decode_token.userId,
-            email: decode_token?.email || "",
-          });
-        }
+        // if (response.status == 200) {
+        //   const decode_token: IResAuth = jwt(response.data.access_token);
+        //   set({
+        //     access_token: response.data.access_token,
+        //     username: decode_token.username,
+        //     id: decode_token.userId,
+        //     email: decode_token?.email || "",
+        //   });
+        // }
         return response
       },
       fetchSignup: async (data) => {

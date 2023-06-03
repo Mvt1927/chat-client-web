@@ -1,5 +1,8 @@
+import { CircularProgress } from "@mui/material";
 import { React, useEffect, useRef, lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { checkServerStatus } from "./core/apis/server";
+import { useServerStore } from "./core/store/serverStore";
 const LoginPage = lazy(() => import("./pages/Login"));
 const LogoutPage = lazy(() => import("./pages/Logout"));
 const RegisterPage = lazy(() => import("./pages/Register"));
@@ -11,29 +14,56 @@ import { ROUTES } from "./utils";
 
 export default function MyRouter() {
     const socket = useRef();
+    const serverStatus = useServerStore().serverStatus;
+
+
+
+    useEffect(() => {
+        checkServerStatus()
+    })
+
     return (
-        <BrowserRouter>
-            <Routes>
-                <Route path={ROUTES.HOME} exact element={
-                    <Suspense fallback={<div>Loading....</div>}>
-                        <LoginPage /> 
-                    </Suspense>
-                } />
-                <Route path={ROUTES.TEST} exact element={
-                    <Suspense fallback={<div>Loading....</div>}>
-                        <TestPage /> 
-                    </Suspense>
-                } />
-                <Route path={ROUTES.REGISTER} exact element={<RegisterPage />} />
-                <Route path={ROUTES.LOGIN} exact element={
-                    <Suspense fallback={<div>Loading....</div>}>
-                        <LoginPage /> 
-                    </Suspense>
-                } />
-                <Route path={ROUTES.LOGOUT} exact element={<LogoutPage socket={socket} />} />
-                <Route path={ROUTES.MESSAGE} exact element={<MessagePage socket={socket} />} />
-                <Route path={ROUTES.MESSAGE_ID} exact element={<MessagePage socket={socket} />} />
-            </Routes>
-        </BrowserRouter>
+        <>
+            {serverStatus === false ?
+                <div className="absolute w-full h-full flex justify-center items-center z-50">
+                    <CircularProgress />
+                </div>
+                : <></>}
+            <BrowserRouter>
+                <Routes>
+                    <Route path={ROUTES.HOME} exact element={
+                        <Suspense fallback={
+                            <div className="absolute w-full h-full flex justify-center items-center z-50">
+                                <CircularProgress />
+                            </div>
+                        }>
+                            <LoginPage />
+                        </Suspense>
+                    } />
+                    <Route path={ROUTES.TEST} exact element={
+                        <Suspense fallback={
+                            <div className="absolute w-full h-full flex justify-center items-center z-50">
+                                <CircularProgress />
+                            </div>
+                        }>
+                            <TestPage />
+                        </Suspense>
+                    } />
+                    <Route path={ROUTES.REGISTER} exact element={<RegisterPage />} />
+                    <Route path={ROUTES.LOGIN} exact element={
+                        <Suspense fallback={
+                            <div className="absolute w-full h-full flex justify-center items-center z-50">
+                                <CircularProgress />
+                            </div>
+                        }>
+                            <LoginPage />
+                        </Suspense>
+                    } />
+                    <Route path={ROUTES.LOGOUT} exact element={<LogoutPage socket={socket} />} />
+                    <Route path={ROUTES.MESSAGE} exact element={<MessagePage socket={socket} />} />
+                    <Route path={ROUTES.MESSAGE_ID} exact element={<MessagePage socket={socket} />} />
+                </Routes>
+            </BrowserRouter>
+        </>
     )
 }

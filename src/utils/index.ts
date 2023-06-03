@@ -10,7 +10,14 @@ export enum ROUTES {
     MESSAGE_ID = '/m/:id',
     TEST='/test',
 }
-
+export const toastOptions = {
+    position: "bottom-right",
+    autoClose: 3000,
+    pauseOnHover: true,
+    draggable: true,
+    theme: "dark",
+};
+export const TIMEOUT = 1000
 
 
 

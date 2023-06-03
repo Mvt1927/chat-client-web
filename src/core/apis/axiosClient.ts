@@ -1,9 +1,9 @@
 import axios from "axios";
-import { BASE_URL } from "../../utils";
+import { BASE_URL, TIMEOUT } from "../../utils";
 
 const AXIOS = axios.create({
   baseURL: BASE_URL,
-  timeout: 5000,
+  timeout: TIMEOUT + 4000,
   headers: {
     "Content-Type": "application/json",
   },

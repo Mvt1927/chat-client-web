@@ -6,9 +6,10 @@ import Button from "@mui/material/Button"
 import "react-toastify/dist/ReactToastify.css";
 import myGlobalSetting from "/src/myGlobalSetting"
 import { useAuthStore } from "../core/store/authStore";
-import { ROUTES } from "../utils";
+import { ROUTES, toastOptions } from "../utils";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import PersonIcon from '@mui/icons-material/Person';
+import { Alert, Snackbar } from "@mui/material";
 
 
 export default function Login() {
@@ -24,17 +25,11 @@ export default function Login() {
 
 
     const [values, setValues] = useState({ username: "", password: "" });
-    const toastOptions = {
-        position: "bottom-right",
-        autoClose: 3000,
-        pauseOnHover: true,
-        draggable: true,
-        theme: "dark",
-    };
 
     const handleChange = (event) => {
         setValues({ ...values, [event.target.name]: event.target.value });
     };
+
 
     const validateForm = () => {
         const { username, password } = values;
@@ -50,20 +45,17 @@ export default function Login() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        // console.log(authStore)
         if (validateForm()) {
             const { username, password } = values;
             const response = await authStore.fetchSignin({ username, password })
+
+            console.log(response)
 
             if (response.status === 401) {
                 toast.error((response.data.message || "error"), toastOptions);
             }
         }
     };
-
-    const handleNavi = () => {
-        navigate(ROUTES.TEST)
-    }
 
     return (
         <>
@@ -123,7 +115,7 @@ export default function Login() {
                     </div>
                 </div>
             </div>
-            <ToastContainer className="text-base" />
+
         </>
     );
 }
