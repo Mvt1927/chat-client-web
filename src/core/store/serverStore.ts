@@ -1,9 +1,9 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { checkServerStatus } from "../apis/server";
-import { IServer } from "../dtos/serverDto";
+import { IServerStore } from "../dtos/serverDto";
 
-export const useServerStore = create<IServer>()(
+export const useServerStore = create<IServerStore>()(
     persist(
         (set, get) => ({
             serverStatus: false,
@@ -19,6 +19,6 @@ export const useServerStore = create<IServer>()(
                 }
             },
         }), {
-        name: "server-store"
+        name: "server-storage"
     })
 )

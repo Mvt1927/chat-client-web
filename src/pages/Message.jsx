@@ -5,76 +5,51 @@ import myGlobalSetting from "../myGlobalSetting";
 import { useNavigate, useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 import ContactsContainer from "../components/Contacts/contactsContainer"
-import Welcome from "../components/Chats/Welcome";
+import Wellcome from "../components/Chats/Welcome";
 import ChatsContainer from "../components/Chats/chatsContainer";
 import axios from "axios";
 import { useAuthStore } from "../core/store/authStore";
+import { BASE_URL, ROUTES } from "../utils";
+import { useSocketStore } from "../core/store/socketStore";
+import { useContactsStore } from "../core/store/contactsStore";
 
 
 export default function Message({ socket }) {
     const authStore = useAuthStore()
+    const socketStore = useSocketStore()
+    const conatctsStore = useContactsStore()
+
+
     const [currentChatID, setCurrentChatID] = useState(NaN);
     var [currentChatUser, setCurrentChatUser] = useState(undefined);
     const [contacts, setContacts] = useState(null);
-    const [currentUser, setCurrentUser] = useState(undefined);
     const [arrivalMessage, setArrivalMessage] = useState(null);
-    const reload = useRef(false)
 
     const navigate = useNavigate()
     const params = useParams();
 
     const id = params.id
 
-    const token = authStore.access_token
 
     var status = true
 
     useEffect(() => {
-        if (authStore.access_token=="") {
+        if (authStore.access_token === "") {
             navigate(myGlobalSetting.ROUTE.LOGIN)
         }
     }, [authStore.access_token]);
 
     useEffect(() => {
-        const getData = async () => {
-            if (currentUser) {
-                const config = {
-                    headers: {
-                        Authorization: 'Bearer ' + authStore.access_token
-                    }
-                }
-                await axios.get(
-                    myGlobalSetting.USERS,
-                    config
-                ).then(({ data }) => {
-                    // console.log(data)
-                    if (data.status===true)
-                        setContacts([...data.users])
-                    
-                    // if (data.statusCode===200)
-                    //     setContacts([...data.users])
-                    else setContacts([])
-                }).catch((e) => {
-                    console.log(e)
-                    setContacts([])
-                })
-                sessionStorage.setItem(myGlobalSetting.SOCKET, socket.current)
-            }
+        if (authStore.access_token) {
+            conatctsStore.fetchContact(authStore.access_token)
         }
-        getData()
-    }, [currentUser, arrivalMessage]);
+    }, [authStore.access_token, arrivalMessage]);
 
     useEffect(() => {
-        if (currentUser) {
-            socket.current = io(myGlobalSetting.HOST, {
-                extraHeaders: {
-                    access_token: token,
-                }
-            });
-            console.log(socket.current)
-            sessionStorage.setItem(myGlobalSetting.SOCKET, socket.current)
+        if (authStore.access_token) {
+            socketStore.fetchSocket(authStore.access_token)
         }
-    }, [currentUser]);
+    }, [authStore.access_token]);
 
     useEffect(() => {
         if (Number.isInteger(parseInt(id)) && parseInt(id) >= 0) {
@@ -98,19 +73,14 @@ export default function Message({ socket }) {
         }
     }, [id, contacts])
 
-    const handleChatChange = (id, chat) => {
-        setCurrentChatID(id)
-        setCurrentChatUser(chat);
-    };
-
     if (status)
         return (
             <div className="App flex flex-row">
-                <ContactsContainer currentUser={currentUser} contacts={contacts} currentChatID={currentChatID} navigate={navigate} changeChat={handleChatChange} />
+                <ContactsContainer />
 
                 <div className={`chat ${!currentChatID ? 'hidden' : ''} md:block`}>
                     {!currentChatUser
-                        ? <Welcome currentUser={currentUser} />
+                        ? <Wellcome />
                         : <ChatsContainer currentChatID={currentChatID} currentChat={currentChatUser} socket={socket} arrivalMessage={arrivalMessage} setCurrentChat={setCurrentChatUser} setCurrentChatID={setCurrentChatID} setArrivalMessage={setArrivalMessage} />
                     }
                 </div>

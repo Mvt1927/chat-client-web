@@ -1,14 +1,18 @@
 import { deleteFriend } from "../apis";
 
 export interface IMessage {
-  id: number | undefined;
-  userId?: number;
-  createdAt: string | undefined;
-  from: number | undefined;
-  to: number | undefined;
-  msg: string;
+  id: number
+  value: string
+  status: string | null
+  createdAt: Date
+  updateAt: Date
 }
 
+
+
+
+
+/******* */
 export interface IResMessage {
   userId: number;
   createdAt: string | undefined;

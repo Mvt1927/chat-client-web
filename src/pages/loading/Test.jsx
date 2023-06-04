@@ -1,13 +1,12 @@
 import { lazy, Suspense } from "react";
 import Loading from "../../components/Loading/Loading";
-const Message = lazy(() => import("../Message"));
+const Test = lazy(() => import("../Test"));
 
-
-export default function SuspensedMessage({ socket }) {
+export default function SuspensedTest() {
 
     return (
         <Suspense fallback={<Loading />}>
-            <Message socket={socket} />
+            <Test />
         </Suspense>
     );
 }

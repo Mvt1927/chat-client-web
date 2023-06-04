@@ -11,18 +11,19 @@ export interface ISignup extends ISignin {
   lastName:string;
 }
 
-export interface IResAuth {
-  userId: number;
+export interface ITokenPayload {
+  id: number;
+  name: string;
   username: string;
-  email?: string;
-  access_token: string;
+  iat: number;
+  exp: number;
 }
 
-export interface IAuth {
+export interface IAuthStore {
   access_token: string;
   username: string;
-  email: string;
-  id: number | undefined;
+  id: number;
+  name:string;
   fetchSignin(data: ISignin): any;
   fetchSignup(data: ISignup): any;
   clearAuth(): void;

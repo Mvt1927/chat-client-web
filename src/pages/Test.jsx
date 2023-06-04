@@ -4,20 +4,44 @@ import { ToastContainer, toast } from "react-toastify";
 import Button from "@mui/material/Button"
 import "react-toastify/dist/ReactToastify.css";
 import { useAuthStore } from "../core/store/authStore";
+import jwtDecode from "jwt-decode";
 import { ROUTES } from "../utils";
 
 
 export default function Test() {
-    const authStore = useAuthStore()
+    const authStore = useAuthStore();
     const navigate = useNavigate();
 
+    const validJwt = obj =>
+        new Proxy(obj, {
+            get: (obj, key) => {
+                try {
+                    var decodedToken = jwtDecode(obj[key], { complete: true })
+                    var dateNow = new Date();
+                    if (decodedToken.exp > dateNow.getTime())
+                        return obj[key]
+                    return undefined
+                } catch (error) {
+                    return {}
+                }
+            }
+        });
+
     const handleNavi = () => {
+        authStore.clearAuth()
         navigate(ROUTES.HOME)
+
     }
 
+    const test = () => {
+        console.log(authStore)
+    }
     return (
         <div className="flex content-center justify-center h-screen flex-col items-center">
             <div className="login-card w-full sm:w-3/4 md:w-2/3 lg:w-1/3 h-fit min-h-3/4" >
+                <Button onClick={test} color="primary" size='large' className="font-bold" variant="contained" type="submit">
+                    <div className="font-bold">TEST</div>
+                </Button>
                 <Button onClick={handleNavi} color="primary" size='large' className="font-bold" variant="contained" type="submit">
                     <div className="font-bold">TEST 2</div>
                 </Button>

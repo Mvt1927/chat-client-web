@@ -21,15 +21,17 @@ export const signin = async (data: ISignin) => {
   }
 };
 
-export const getusers = async (token: string) => {
+export const getContacts = async (access_token: string) => {
   try {
     const res = await AXIOS.get(`${subdirectory}/users`, {
       headers: {
-        "Authorization": `Bearer ${token}`,
+        "Authorization": `Bearer ${access_token}`,
       },
     });
+    console.log(res)
     return res;
   } catch (error) {
-    return error;
+    console.log(error)
+    return error.response || error;
   }
 };

@@ -10,7 +10,6 @@ export default function ServerConnectionChecker() {
     const serverStore = useServerStore()
     const handleCheckServer = () => {
         serverStore.fetchCheckServerStatus((status) => {
-            status ? interval = TIMEOUT + 4000 : interval = TIMEOUT
             status ? toast.success("Server is now online.", toastOptions): toast.error("Server is not respone.", toastOptions);
         }
         )
