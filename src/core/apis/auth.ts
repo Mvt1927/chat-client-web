@@ -28,7 +28,6 @@ export const getContacts = async (access_token: string) => {
         "Authorization": `Bearer ${access_token}`,
       },
     });
-    console.log(res)
     return res;
   } catch (error) {
     console.log(error)

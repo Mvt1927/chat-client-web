@@ -1,4 +1,5 @@
-import { IMessage } from ".";
+import { Socket } from "socket.io-client";
+import { IContact, IMessage } from ".";
 import { IUserInfo } from "./contactsDto"
 
 export interface IChat {
@@ -16,4 +17,12 @@ export interface IChat {
     messages?: IMessage,
     userReceive?: IUserInfo,
     userSend?: IUserInfo
+}
+export interface IChatStore {
+    currentChats: IChat[],
+    newChat: IChat|null
+    fetchChats(access_token:string, contact:IContact): any
+    onSocketReceiveMessage(socket: Socket, contact:IContact): any
+    emitSocketSendMessage(socket: Socket, contact:IContact, message:string): any
+    clear(): void
 }

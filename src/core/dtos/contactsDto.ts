@@ -3,7 +3,8 @@ import { IChat } from "./chatsDto";
 export interface IContact {
     id: number,
     username: string,
-    chat: IChat | {}
+    name: string
+    chat: IChat[]
 }
 
 export interface IUserInfo {
@@ -14,8 +15,9 @@ export interface IUserInfo {
 
 export interface IContactStore {
     contacts: IContact[];
-    selectedContactId: number;
-    setSelectedContactId(id: number): any;
+    selectedContact: IContact | null;
+    setSelectedContact(contact: IContact): any;
     fetchContact(access_token: string): any;
     clear(): void;
+    clearSelectedContact(): void;
 }

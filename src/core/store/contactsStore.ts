@@ -9,10 +9,10 @@ export const useContactsStore = create<IContactStore>()(
     persist(
         (set, get) => ({
             contacts: [],
-            selectedContactId: NaN,
-            setSelectedContactId(id) {
+            selectedContact: null,
+            setSelectedContact(contact) {
                 set({
-                    selectedContactId: id || NaN
+                    selectedContact: contact || null
                 })
             },
             fetchContact: async (access_token) => {
@@ -27,7 +27,12 @@ export const useContactsStore = create<IContactStore>()(
             clear() {
                 set({
                     contacts: [],
-                    selectedContactId: NaN,
+                    selectedContact: null,
+                })
+            },
+            clearSelectedContact() {
+                set({
+                    selectedContact: null,
                 })
             },
         }), {

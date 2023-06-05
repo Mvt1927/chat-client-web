@@ -25,7 +25,7 @@ export default function ContactsContainer() {
     useEffect(() => {
         if (!authStore.access_token)
             navigate(ROUTES.LOGIN)
-    },[])
+    }, [])
 
     const handleScroll = (e) => {
         e.preventDefault();
@@ -48,7 +48,7 @@ export default function ContactsContainer() {
 
 
     return (
-        <div className={`${contactsStore.selectedContactId ? ' hidden md:w-my-left md:flex' : ' md:flex'} sm:w-my-left border-r border-border-color flex-col flex-shrink-0 flex-grow-0`}>
+        <div className={`${contactsStore.selectedContact ? ' hidden md:w-my-left md:flex' : ' md:flex'} sm:w-my-left border-r border-border-color flex-col flex-shrink-0 flex-grow-0`}>
             <div className="user-top-left flex flex-col px-4 py-2.5 h-14">
                 <div className="user flex flex-row pad justify-between items-center">
                     <IconButton onClick={handleAvatarClick} sx={{ width: 42, height: 42, ml: 0 }} style={{ border: '1.5px solid gray' }} /* className="avatar-left w-3/12 flex" */>

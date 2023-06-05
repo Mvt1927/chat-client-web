@@ -2,13 +2,13 @@
 export const BASE_URL = "http://127.0.0.1:3333/"
 
 export enum ROUTES {
-    LOGIN ='/login',
+    LOGIN = '/login',
     LOGOUT = '/logout',
-    REGISTER='/signup',
-    HOME='/',
-    MESSAGE ='/m',
+    REGISTER = '/signup',
+    HOME = '/',
+    MESSAGE = '/m',
     MESSAGE_ID = '/m/:id',
-    TEST='/test',
+    TEST = '/test',
 }
 export const toastOptions = {
     position: "bottom-right",
@@ -18,6 +18,10 @@ export const toastOptions = {
     theme: "dark",
 };
 export const TIMEOUT = 1000
+export enum SOCKET {
+    SEND_MESSAGE = "sendMessage",
+    RECEIVE_MESSAGE = "receiveMessage"
+}
 
 
 

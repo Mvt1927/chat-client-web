@@ -1,23 +1,21 @@
-import React, { Component, useEffect, useRef, useState } from "react";
-import jwt_decode from 'jwt-decode';
+import React, { useEffect, useState } from "react";
 import "/src/css/Message.css";
-import myGlobalSetting from "../myGlobalSetting";
 import { useNavigate, useParams } from "react-router-dom";
-import { io } from "socket.io-client";
 import ContactsContainer from "../components/Contacts/contactsContainer"
 import Wellcome from "../components/Chats/Welcome";
 import ChatsContainer from "../components/Chats/chatsContainer";
-import axios from "axios";
 import { useAuthStore } from "../core/store/authStore";
-import { BASE_URL, ROUTES } from "../utils";
+import { ROUTES } from "../utils";
 import { useSocketStore } from "../core/store/socketStore";
 import { useContactsStore } from "../core/store/contactsStore";
+import { useChatsStore } from "../core/store/chatsStore";
 
 
 export default function Message({ socket }) {
     const authStore = useAuthStore()
     const socketStore = useSocketStore()
-    const conatctsStore = useContactsStore()
+    const contactsStore = useContactsStore()
+    const chatsStore = useChatsStore()
 
 
     const [currentChatID, setCurrentChatID] = useState(NaN);
@@ -26,24 +24,21 @@ export default function Message({ socket }) {
     const [arrivalMessage, setArrivalMessage] = useState(null);
 
     const navigate = useNavigate()
-    const params = useParams();
-
-    const id = params.id
-
+    const { id } = useParams()
 
     var status = true
 
     useEffect(() => {
-        if (authStore.access_token === "") {
+        if (!authStore.access_token) {
             navigate(myGlobalSetting.ROUTE.LOGIN)
         }
     }, [authStore.access_token]);
 
     useEffect(() => {
         if (authStore.access_token) {
-            conatctsStore.fetchContact(authStore.access_token)
+            contactsStore.fetchContact(authStore.access_token)
         }
-    }, [authStore.access_token, arrivalMessage]);
+    }, [authStore.access_token, chatsStore.newChat]);
 
     useEffect(() => {
         if (authStore.access_token) {
@@ -54,37 +49,44 @@ export default function Message({ socket }) {
     useEffect(() => {
         if (Number.isInteger(parseInt(id)) && parseInt(id) >= 0) {
             const chatID = parseInt(id)
-            setCurrentChatID(chatID);
-            if (contacts) {
-                contacts.map(async (contact) => {
-                    if (contact.id == chatID) {
-                        setCurrentChatUser(contact)
+            if (contactsStore.contacts) {
+                contactsStore.contacts.map(async (contact) => {
+                    if (contact.id === chatID) {
+                        contactsStore.setSelectedContact(contact)
                     }
                 });
-                if (!currentChatUser) {
-                    setCurrentChatID(NaN)
-                    setCurrentChatUser(undefined)
-                    navigate(myGlobalSetting.ROUTE.MESSAGE)
+                if (contactsStore.selectedContact) {
+                    navigate(ROUTES.MESSAGE + '/' + contactsStore.selectedContact.id)
                 }
             }
         } else {
-            setCurrentChatID(NaN)
-            setCurrentChatUser(undefined)
+            contactsStore.setSelectedContact(null)
         }
-    }, [id, contacts])
+    }, [id, contactsStore.contacts])
+
+    useEffect(() => {
+        if (socketStore.socket) {
+            chatsStore.onSocketReceiveMessage(socketStore.socket)
+        }
+    }, [socketStore.socket]);
+
+    useEffect(() => {
+        chatsStore.fetchChats(authStore.access_token, contactsStore.selectedContact)
+    }, [contactsStore.selectedContact]);
 
     if (status)
         return (
             <div className="App flex flex-row">
                 <ContactsContainer />
 
-                <div className={`chat ${!currentChatID ? 'hidden' : ''} md:block`}>
-                    {!currentChatUser
+                <div className={`chat ${!contactsStore.selectedContact && 'hidden'} md:block`}>
+                    {!contactsStore.selectedContact
                         ? <Wellcome />
-                        : <ChatsContainer currentChatID={currentChatID} currentChat={currentChatUser} socket={socket} arrivalMessage={arrivalMessage} setCurrentChat={setCurrentChatUser} setCurrentChatID={setCurrentChatID} setArrivalMessage={setArrivalMessage} />
+                        : <ChatsContainer />
                     }
                 </div>
             </div>
         );
+    return (<></>)
 }
 

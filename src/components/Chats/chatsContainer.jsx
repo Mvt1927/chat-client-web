@@ -2,73 +2,35 @@ import React, { useEffect, useRef, useState } from "react";
 import FunctionButton from "../functionButton";
 import UserCardTopContainer from "./userCardTopContainer";
 import { v4 as uuidv4 } from "uuid";
-import myGlobalSetting from "/src/myGlobalSetting";
 import axios from "axios"
 import jwtDecode from "jwt-decode";
 import Picker from "emoji-picker-react";
 import { useNavigate } from "react-router-dom";
+import { useContactsStore } from "../../core/store/contactsStore";
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import { useChatsStore } from "../../core/store/chatsStore";
+import { ROUTES } from "../../utils";
+import { useSocketStore } from "../../core/store/socketStore";
 
-export default function ChatsContainer({ currentChatID, currentChat, socket, arrivalMessage, setArrivalMessage }) {
+
+export default function ChatsContainer() {
     const [messages, setMessages] = useState([]);
+    const socketStore = useSocketStore();
     const [msg, setMsg] = useState("");
+
     const scrollRef = useRef();
-    // const [arrivalMessage, setArrivalMessage] = useState(null);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const navigate = useNavigate()
     const handleEmojiPickerhideShow = (e) => {
         setShowEmojiPicker(!showEmojiPicker);
     };
+    const contactsStore = useContactsStore();
+    const chatsStore = useChatsStore()
 
-    useEffect(() => {
-        const getChat = async () => {
-            // console.log(currentChat)
-            const token = sessionStorage.getItem(myGlobalSetting.ACCESS_TOKEN)
-            const config = {
-                headers: {
-                    Authorization: 'Bearer ' + token
-                }
-            }
-            if (token && currentChatID) {
-                await axios.post(myGlobalSetting.getChats, {
-                    receiverId: Number(currentChatID),
-                }, config).then(({ data }) => {
-                    // console.log(data)
-                    if (data.status===true)
-                        return setMessages([...data.chats])
-                    // if (data.statusCode===200)
-                    //     return setMessages([...data.chats])
-                    else setMessages([]);
-                }).catch(({ response }) => {
-                    console.log(response.data)
-                    setMessages([]);
-                });
-                // setMessages(chats);
-            }
-            // else console.warn("ChatWeb_Client\src\components\Chats\chatsContainer.jsx: token:" + token + " id: " + id)
-        }
-        setShowEmojiPicker(false)
-        getChat()
-    }, [currentChat, currentChatID]);
-
-    useEffect(() => {
-        if (socket.current) {
-            socket.current.on("receiveMessage", (data) => {
-                setArrivalMessage(data);
-            });
-        }
-    }, []);
-    
-    useEffect(() => {
-        if (arrivalMessage) {
-            if (arrivalMessage.from == currentChat.id) {
-                arrivalMessage && setMessages([...messages, arrivalMessage]);
-            }
-        }
-    }, [arrivalMessage]);
 
     useEffect(() => {
         scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);
+    }, [chatsStore.currentChats]);
 
     const sendChat = (event) => {
         event.preventDefault();
@@ -79,17 +41,7 @@ export default function ChatsContainer({ currentChatID, currentChat, socket, arr
         }
     };
     const handleSendMsg = async (msg) => {
-        const token = sessionStorage.getItem(myGlobalSetting.ACCESS_TOKEN)
-        const payload = await jwtDecode(token);
-        socket.current.emit("sendMessage", {
-            access_token: token,
-            to: currentChatID,
-            msg: msg,
-        });
-        // const msgs = [...messages];
-        // msgs.push({ from: Number(payload.id), to: Number(currentChatID), msg: msg });
-        // setMessages(msgs);
-        setArrivalMessage({id:uuidv4(), msg: msg, from: Number(payload.id), to: Number(currentChatID) })
+        chatsStore.emitSocketSendMessage(socketStore.socket, contactsStore.selectedContact, msg)
     };
     const handleEnter = (e) => {
         if (e.code == 'Enter') {
@@ -98,44 +50,47 @@ export default function ChatsContainer({ currentChatID, currentChat, socket, arr
     }
     const handleEmojiClick = (emojiObject) => {
         let message = msg;
-        // console.log(emojiObject)
-        // console.log(emojiObject.getImageUrl())
         message += emojiObject.emoji;
-        // message += `<img height="16" width="16" alt="🙂" referrerpolicy="origin-when-cross-origin" src="https://static.xx.fbcdn.net/images/emoji.php/v9/ta5/1.5/16/1f642.png">`;
         setMsg(message);
     };
 
     const handleBackClick = (e) => {
         e.preventDefault();
-        navigate('/m')
+        chatsStore.clear();
+        contactsStore.clearSelectedContact();
+        navigate(ROUTES.MESSAGE)
     }
 
     return (
-        <div id={currentChatID} className="right-container flex flex-col h-full">
+        <div id={contactsStore.selectedContact.username + "_container"} className="right-container flex flex-col h-full">
             <div className="friend-top-right-container border-b border-border-color h-14">
                 <div className="friend-container h-full flex flex-row justify-between px-2.5 py-1">
                     <div className="w-fit flex items-center flex-nowrap">
                         <div className="md:hidden contents">
                             <FunctionButton
                                 onClick={handleBackClick}
-                                className="text-blue-400 fa-solid fa-arrow-left text-2xl"
+                                className="text-blue-400 text-2xl"
                                 size={36}
+                                Icon={KeyboardArrowLeftIcon}
                             />
                         </div>
-                        <UserCardTopContainer obj={currentChat} />
+                        <UserCardTopContainer obj={contactsStore.selectedContact} />
                     </div>
                     <div className="fun-btn flex flex-row w-fit items-center">
                         <FunctionButton
                             className="text-blue-400 fa-solid fa-phone text-lg"
                             size={36}
+                            Icon={KeyboardArrowLeftIcon}
                         />
                         <FunctionButton
                             className="text-blue-400 fa-solid fa-video text-lg"
                             size={36}
+                            Icon={KeyboardArrowLeftIcon}
                         />
                         <FunctionButton
                             className="text-blue-400 fa-solid fa-ellipsis text-lg"
                             size={36}
+                            Icon={KeyboardArrowLeftIcon}
                         />
                     </div>
                 </div>
@@ -146,24 +101,24 @@ export default function ChatsContainer({ currentChatID, currentChat, socket, arr
                         <div className="message-interface h-full flex flex-col justify-end">
                             <div className="chat-messages h-fit overflow-auto px-4 py-4 gap-1.5">
                                 {
-                                    messages.map((message, index) => {
+                                    chatsStore.currentChats.map((chat, index) => {
                                         // console.log(message)
                                         return (
-                                            <div className="message-container" ref={scrollRef} key={uuidv4()}>
+                                            <div className="message-container" ref={scrollRef} key={chat.id}>
 
-                                                {message.to == currentChatID
+                                                {chat.userReceiveId === contactsStore.selectedContact.id
                                                     ? <div className="message sender flex justify-end" >
                                                         <div className={`content w-fit bg-blue-400 rounded-3xl px-3 py-2 break-words 
-                                                    ${messages[index - 1]?.to == currentChatID ? "rounded-tr-md my-[1px]" : "my-0.5 "}
-                                                    ${messages[index + 1]?.to == currentChatID ? "rounded-br-md my-[1px]" : "my-0.5 "}`}>
-                                                            <p className="w-fit max-w-[50vw] sm:max-w-[30vw] text-base font-light text-white">{message.msg}</p>
+                                                    ${chatsStore.currentChats[index - 1]?.userReceiveId === contactsStore.selectedContact.id ? "rounded-tr-md my-[1px]" : "my-0.5 "}
+                                                    ${chatsStore.currentChats[index + 1]?.userReceiveId === contactsStore.selectedContact.id ? "rounded-br-md my-[1px]" : "my-0.5 "}`}>
+                                                            <p className="w-fit max-w-[50vw] sm:max-w-[30vw] text-base font-light text-white">{chat.messages.value}</p>
                                                         </div>
                                                     </div>
                                                     : <div className="message reciver flex" >
                                                         <div className={`content w-fit bg-[#E4E6EB] rounded-3xl px-3 py-2 break-words 
-                                                    ${messages[index - 1]?.from == currentChatID ? "rounded-tl-md my-[1px] " : "my-0.5"} 
-                                                    ${messages[index + 1]?.from == currentChatID ? "rounded-bl-md my-[1px]" : "my-0.5"}`}>
-                                                            <p className="w-fit max-w-[50vw] sm:max-w-[30vw] text-base font-light">{message.msg}</p>
+                                                    ${chatsStore.currentChats[index - 1]?.userSendId === contactsStore.selectedContact.id ? "rounded-tl-md my-[1px] " : "my-0.5"} 
+                                                    ${chatsStore.currentChats[index + 1]?.userSendId === contactsStore.selectedContact.id ? "rounded-bl-md my-[1px]" : "my-0.5"}`}>
+                                                            <p className="w-fit max-w-[50vw] sm:max-w-[30vw] text-base font-light">{chat.messages.value}</p>
                                                         </div>
                                                     </div>}
                                             </div>
@@ -182,14 +137,20 @@ export default function ChatsContainer({ currentChatID, currentChat, socket, arr
                                 <FunctionButton
                                     className="fa-solid text-lg fa-circle-plus text-blue-400"
                                     size={36}
+                                    Icon={KeyboardArrowLeftIcon}
+
                                 />
                                 <FunctionButton
                                     className="fa-regular text-lg fa-image text-blue-400"
                                     size={36}
+                                    Icon={KeyboardArrowLeftIcon}
+
                                 />
                                 <FunctionButton
                                     className="fa-solid text-lg fa-gif text-blue-400"
                                     size={36}
+                                    Icon={KeyboardArrowLeftIcon}
+
                                 />
                             </div>
                             <div className="input-mid-container ml-2.5 pl-2.5 rounded-full flex flex-row justify-items-center h-full bg-f2f2f2">
@@ -200,7 +161,8 @@ export default function ChatsContainer({ currentChatID, currentChat, socket, arr
                         focus:outline-none"
                                     onChange={(e) => setMsg(e.target.value)}
                                     placeholder="Aa"
-                                    onKeyPress={e => { handleEnter(e) }}
+
+                                    onKeyDown={e => { handleEnter(e) }}
                                     value={msg}
                                 />
                                 <div className="md:contents hidden ">
@@ -208,6 +170,8 @@ export default function ChatsContainer({ currentChatID, currentChat, socket, arr
                                         onClick={handleEmojiPickerhideShow}
                                         className="fa-solid fa-face-smile text-lg text-blue-400"
                                         size={36}
+                                        Icon={KeyboardArrowLeftIcon}
+
                                     />
                                 </div>
                             </div>
@@ -216,6 +180,8 @@ export default function ChatsContainer({ currentChatID, currentChat, socket, arr
                                     onClick={sendChat}
                                     className="text-lg fa-solid fa-paper-plane-top text-blue-400"
                                     size={36}
+                                    Icon={KeyboardArrowLeftIcon}
+
                                 />
                             </div>
                         </div>

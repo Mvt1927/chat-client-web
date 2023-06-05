@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../core/store/authStore";
-import myGlobalSetting from "../myGlobalSetting";
 import { ROUTES } from "../utils";
 
 export default function Logout({ socket }) {

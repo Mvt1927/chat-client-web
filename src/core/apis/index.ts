@@ -1,4 +1,4 @@
 export * from './auth'
-export * from './message'
+export * from './chats'
 export * from './friend'
 export * from './friend-request'
