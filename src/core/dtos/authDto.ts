@@ -1,4 +1,6 @@
 import { AxiosResponse } from "axios";
+import { Socket } from "socket.io-client";
+import { IUserInfo } from "./contactsDto";
 
 export interface ISignin {
   username: string;
@@ -7,8 +9,8 @@ export interface ISignin {
 
 export interface ISignup extends ISignin {
   email: string;
-  firstName:string;
-  lastName:string;
+  firstName: string;
+  lastName: string;
 }
 
 export interface ITokenPayload {
@@ -21,21 +23,19 @@ export interface ITokenPayload {
 
 export interface IAuthStore {
   access_token: string;
-  username: string;
-  id: number;
-  name:string;
-  fetchSignin(data: ISignin): any;
+  user: IUserInfo
+  fetchSignin(data: ISignin): Promise<AxiosResponse>;
   fetchSignup(data: ISignup): any;
   clearAuth(): void;
 }
 
-export interface IUser {
-  email: string;
-  username: string;
+export interface IImage {
   id: number;
-  avatar?: string;
-  firstName?: string;
-  lastName?: string;
+  status: string | null;
+  name: string;
+  url: string;
+  createdAt: Date;
+  updateAt: Date;
 }
 
 export interface ResponseGenerator {

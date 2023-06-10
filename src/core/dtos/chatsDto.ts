@@ -22,7 +22,7 @@ export interface IChatStore {
     currentChats: IChat[],
     newChat: IChat|null
     fetchChats(access_token:string, contact:IContact): any
-    onSocketReceiveMessage(socket: Socket, contact:IContact): any
+    onSocketReceive(socket: Socket, contact:IContact): any
     emitSocketSendMessage(socket: Socket, contact:IContact, message:string): any
     clear(): void
 }

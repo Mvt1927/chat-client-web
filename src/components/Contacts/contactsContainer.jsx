@@ -55,7 +55,7 @@ export default function ContactsContainer() {
                         <Avatar sx={{ width: 36, height: 36 }} /* className="w-9 h-9 hover:bg-[#00000020] hover:opacity-100 rounded-full cursor-pointer" */>
                             <img
                                 // className="w-9 rounded-full hover:mix-blend-overlay hover:bg-black"
-                                src={authStore.srcAvatar ? authStore.srcAvatar : "/avatar.jpg"}
+                                src={authStore.user.avatar ? authStore.user.avatar.url : "/avatar.jpg"}
                                 alt="avatar"
                             />
                         </Avatar>
@@ -99,9 +99,9 @@ export default function ContactsContainer() {
                     >
                         <MenuItem>
                             <Avatar style={{ border: '1.5px solid gray' }}>
-                                <img src={authStore.srcAvatar ? authStore.srcAvatar : "/avatar.jpg"} alt="avatar" />
+                                <img src={authStore.user.avatar ? authStore.user.avatar.url : "/avatar.jpg"} alt="avatar" />
                             </Avatar>
-                            {`${authStore.name} (${authStore.username})`}
+                            {`${authStore.user.name} (${authStore.user.username})`}
                         </MenuItem>
                         <Divider />
                         <MenuItem>

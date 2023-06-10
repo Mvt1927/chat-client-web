@@ -29,13 +29,13 @@ export default function ContactCardContainer({ contact, className }) {
                     <div className="w-fit pr-2.5">
                         <Avatar sx={{ width: 42, height: 42 }} style={{ border: '1.5px solid gray' }} >
                             <img
-                                src={contact.srcAvatar || '/avatar.jpg'}
+                                src={contact.avatar ? contact.avatar.url : "/avatar.jpg"}
                                 alt=""
                             />
                         </Avatar>
                     </div>
                     <div className="friend-info w-4/5 flex flex-col">
-                        <span className="name-friend text text-base truncate">{contact.name ? contact.name : contact.id}</span>
+                        <span className="name-friend text text-base truncate">{`${contact.name} (${contact.username})`}</span>
                         <div className="lastest-message flex flex-row">
                             <span className="short-text-latest-message max-w-fit w-4/6 text-xs font-light whitespace-nowrap truncate font-base">
                                 {contact.chat[0]?.userSendId

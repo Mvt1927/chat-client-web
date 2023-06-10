@@ -4,22 +4,24 @@ import { persist } from "zustand/middleware";
 import { signin, signup } from "../apis";
 import { IAuthStore, ITokenPayload } from "../dtos";
 import { AxiosResponse } from "axios";
+import moment from "moment";
 
 export const useAuthStore = create<IAuthStore>()(
   persist(
     (set) => ({
       access_token: "",
-      username: "",
-      name: "",
-      id: NaN,
+      user: {
+        id: NaN,
+        username: "",
+        name: "",
+        avatar: null,
+      },
       fetchSignin: async (data) => {
         const response: AxiosResponse = await signin(data);
         if (response.status === 200) {
           set({
             access_token: response.data.access_token,
-            username: response.data.username,
-            name: response.data.name,
-            id: response.data.id,
+            user: response.data.user
           });
         }
         return response
@@ -29,9 +31,7 @@ export const useAuthStore = create<IAuthStore>()(
         if (response.status === 201) {
           set({
             access_token: response.data.access_token,
-            username: response.data.username,
-            name: response.data.name,
-            id: response.data.id,
+            user: response.data.user
           });
 
         }
@@ -40,9 +40,12 @@ export const useAuthStore = create<IAuthStore>()(
       clearAuth: () => {
         set({
           access_token: "",
-          username: "",
-          name: "",
-          id: NaN,
+          user: {
+            id: NaN,
+            username: "",
+            name: "",
+            avatar: null,
+          }
         });
       },
     }),
@@ -50,22 +53,23 @@ export const useAuthStore = create<IAuthStore>()(
       name: "auth-storage",
       onRehydrateStorage: (state) => {
         console.log('hydration starts')
-        if (state.access_token != "") {
-          try {
-            var decodedToken: ITokenPayload = jwt(state.access_token)
-            var dateNow = new Date();
-            if (decodedToken.exp < dateNow.getTime())
-              state.clearAuth()
-          } catch (error) {
-            state.clearAuth()
-          }
-        }
-        // optional
         return (state, error) => {
           if (error) {
             state?.clearAuth()
           } else {
             console.log('hydration finished')
+            if (state) {
+              if (state.access_token != "") {
+                try {
+                  var decodedToken: ITokenPayload = jwt(state.access_token)
+                  var dateNow = moment();
+                  if (decodedToken.exp < dateNow.unix())
+                    state.clearAuth()
+                } catch (error) {
+                  state.clearAuth()
+                }
+              }
+            }
           }
         }
       },

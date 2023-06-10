@@ -22,7 +22,7 @@ export const useChatsStore = create<IChatStore>()(
                 }
                 return response
             },
-            onSocketReceiveMessage(socket) {
+            onSocketReceive(socket) {
                 if (socket) {
 
                     socket.on(SOCKET.RECEIVE_MESSAGE, (data) => {
@@ -35,6 +35,9 @@ export const useChatsStore = create<IChatStore>()(
                         set({
                             newChat: data.chat,
                         })
+                    })
+                    socket.on("call.receive", (data) => {
+                        console.log(data);
                     })
                 }
             },

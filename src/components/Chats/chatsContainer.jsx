@@ -1,9 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import FunctionButton from "../functionButton";
 import UserCardTopContainer from "./userCardTopContainer";
-import { v4 as uuidv4 } from "uuid";
-import axios from "axios"
-import jwtDecode from "jwt-decode";
 import Picker from "emoji-picker-react";
 import { useNavigate } from "react-router-dom";
 import { useContactsStore } from "../../core/store/contactsStore";
@@ -14,7 +11,6 @@ import { useSocketStore } from "../../core/store/socketStore";
 
 
 export default function ChatsContainer() {
-    const [messages, setMessages] = useState([]);
     const socketStore = useSocketStore();
     const [msg, setMsg] = useState("");
 
@@ -74,7 +70,7 @@ export default function ChatsContainer() {
                                 Icon={KeyboardArrowLeftIcon}
                             />
                         </div>
-                        <UserCardTopContainer obj={contactsStore.selectedContact} />
+                        <UserCardTopContainer />
                     </div>
                     <div className="fun-btn flex flex-row w-fit items-center">
                         <FunctionButton

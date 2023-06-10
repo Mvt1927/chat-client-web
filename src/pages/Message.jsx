@@ -16,13 +16,6 @@ export default function Message({ socket }) {
     const socketStore = useSocketStore()
     const contactsStore = useContactsStore()
     const chatsStore = useChatsStore()
-
-
-    const [currentChatID, setCurrentChatID] = useState(NaN);
-    var [currentChatUser, setCurrentChatUser] = useState(undefined);
-    const [contacts, setContacts] = useState(null);
-    const [arrivalMessage, setArrivalMessage] = useState(null);
-
     const navigate = useNavigate()
     const { id } = useParams()
 
@@ -30,7 +23,7 @@ export default function Message({ socket }) {
 
     useEffect(() => {
         if (!authStore.access_token) {
-            navigate(myGlobalSetting.ROUTE.LOGIN)
+            navigate(ROUTES.LOGIN)
         }
     }, [authStore.access_token]);
 

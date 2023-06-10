@@ -1,14 +1,14 @@
-import { IUser } from "./authDto";
+import { IUserInfo } from "./contactsDto";
 import { IFriend } from "./messageDto";
 
-export interface IUserResult extends IUser {
+export interface IUserResult extends IUserInfo {
   status: number;
 }
 
 export interface IFriendStore {
-  listFriend: [IFriend] | IFriend[];
-  listFriendRequest: [IUser] | IUser[];
-  listUserResult: [IUserResult] | IUserResult[];
+  listFriend: IFriend[];
+  listFriendRequest: IUserInfo[];
+  listUserResult: IUserResult[];
   seachLikeUserame: ({
     querry,
     access_token,
