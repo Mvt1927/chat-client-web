@@ -9,6 +9,8 @@ import { ROUTES } from "../utils";
 import { useSocketStore } from "../core/store/socketStore";
 import { useContactsStore } from "../core/store/contactsStore";
 import { useChatsStore } from "../core/store/chatsStore";
+import CallContainer from "../components/Chats/callContainer";
+import { usePeerStore } from "../core/store/peerStore";
 
 
 export default function Message({ socket }) {
@@ -18,6 +20,7 @@ export default function Message({ socket }) {
     const chatsStore = useChatsStore()
     const navigate = useNavigate()
     const { id } = useParams()
+    const peerStore = usePeerStore()
 
     var status = true
 
@@ -59,7 +62,7 @@ export default function Message({ socket }) {
 
     useEffect(() => {
         if (socketStore.socket) {
-            chatsStore.onSocketReceiveMessage(socketStore.socket)
+            chatsStore.onSocketReceive(socketStore.socket)
         }
     }, [socketStore.socket]);
 
@@ -70,14 +73,18 @@ export default function Message({ socket }) {
     if (status)
         return (
             <div className="App flex flex-row">
-                <ContactsContainer />
+                <CallContainer />
+                <div className={`flex ${chatsStore.onCall&&'hidden'} flex-row`}>
+                    <ContactsContainer />
+                    <div className={`chat ${!contactsStore.selectedContact && 'hidden'} md:block`}>
+                        {!contactsStore.selectedContact
+                            ? <Wellcome />
+                            : <ChatsContainer />
 
-                <div className={`chat ${!contactsStore.selectedContact && 'hidden'} md:block`}>
-                    {!contactsStore.selectedContact
-                        ? <Wellcome />
-                        : <ChatsContainer />
-                    }
+                        }
+                    </div>
                 </div>
+
             </div>
         );
     return (<></>)

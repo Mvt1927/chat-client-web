@@ -13,13 +13,21 @@ export const useSocketStore = create<ISocketStore>()(
         socket: undefined,
         fetchSocket(access_token) {
             const socket = io(BASE_URL, {
+                transports: ['websocket'],
                 extraHeaders: {
-                    access_token: access_token,
+                    access_token: access_token
+                },
+                auth:{
+                    access_token:access_token
                 }
+            });
+            socket.on("connect_error", (err) => {
+                console.error(`connect_error due to ${err.message}`);
             });
             set({
                 socket: socket
             });
+
             return socket
         },
         clear: () => {

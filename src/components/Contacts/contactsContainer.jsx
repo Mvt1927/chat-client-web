@@ -104,8 +104,8 @@ export default function ContactsContainer() {
                             {`${authStore.user.name} (${authStore.user.username})`}
                         </MenuItem>
                         <Divider />
-                        <MenuItem>
-                            <ListItemIcon className="flex items-center">
+                        <MenuItem onClick={(e) => { navigate(ROUTES.TEST) }}>
+                            <ListItemIcon  className="flex items-center">
                                 <Settings fontSize="small" />
                                 <div className="mx-2">Settings</div>
                             </ListItemIcon>

@@ -1,4 +1,4 @@
-import create from "zustand";
+import {create} from "zustand";
 import { IListFriendsSelectedStore } from "../dtos";
 
 export const useListFriendStore = create<IListFriendsSelectedStore>((set, get) => ({

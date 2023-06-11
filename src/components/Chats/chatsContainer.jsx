@@ -8,7 +8,16 @@ import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import { useChatsStore } from "../../core/store/chatsStore";
 import { ROUTES } from "../../utils";
 import { useSocketStore } from "../../core/store/socketStore";
-
+import CallIcon from '@mui/icons-material/Call';
+import VideocamIcon from '@mui/icons-material/Videocam';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import AddIcon from '@mui/icons-material/Add';
+import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import GifBoxIcon from '@mui/icons-material/GifBox';
+import SendIcon from '@mui/icons-material/Send';
+import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
+import { usePeerStore } from "../../core/store/peerStore";
+import { useAuthStore } from "../../core/store/authStore";
 
 export default function ChatsContainer() {
     const socketStore = useSocketStore();
@@ -22,7 +31,8 @@ export default function ChatsContainer() {
     };
     const contactsStore = useContactsStore();
     const chatsStore = useChatsStore()
-
+    const peerStore = usePeerStore()
+    const authStore = useAuthStore()
 
     useEffect(() => {
         scrollRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -57,6 +67,34 @@ export default function ChatsContainer() {
         navigate(ROUTES.MESSAGE)
     }
 
+    const handleRequestCall = async () => {
+        chatsStore.setHasRequestCall({
+            userReceiver: contactsStore.selectedContact
+        })
+        const peer = await peerStore.fetchPeer(authStore.access_token)
+        socketStore.socket?.once('call.answer.receive', async (data) => {
+            console.log(data);
+            if (data.type === 'request.accept') {
+                chatsStore.setOncall(true)
+                const stream = await peerStore.getMedia({ audio: true, video: true })
+                if (stream) {
+                    const call = await peerStore.fetchPeerCall(data.receiverPeerId, stream)
+                    peerStore.fetchPeerMedia(call)
+                }
+            } else {
+                peerStore.clear()
+                chatsStore.clearHasRequestCall()
+            }
+        })
+        peer.on('open', function () {
+            socketStore.socket?.emit("call.request.send", {
+                type: "text",
+                receiverId: contactsStore.selectedContact.id,
+            })
+        });
+
+    }
+
     return (
         <div id={contactsStore.selectedContact.username + "_container"} className="right-container flex flex-col h-full">
             <div className="friend-top-right-container border-b border-border-color h-14">
@@ -73,20 +111,20 @@ export default function ChatsContainer() {
                         <UserCardTopContainer />
                     </div>
                     <div className="fun-btn flex flex-row w-fit items-center">
-                        <FunctionButton
+                        <FunctionButton onClick={handleRequestCall}
                             className="text-blue-400 fa-solid fa-phone text-lg"
                             size={36}
-                            Icon={KeyboardArrowLeftIcon}
+                            Icon={CallIcon}
                         />
                         <FunctionButton
                             className="text-blue-400 fa-solid fa-video text-lg"
                             size={36}
-                            Icon={KeyboardArrowLeftIcon}
+                            Icon={VideocamIcon}
                         />
                         <FunctionButton
                             className="text-blue-400 fa-solid fa-ellipsis text-lg"
                             size={36}
-                            Icon={KeyboardArrowLeftIcon}
+                            Icon={MoreHorizIcon}
                         />
                     </div>
                 </div>
@@ -107,14 +145,14 @@ export default function ChatsContainer() {
                                                         <div className={`content w-fit bg-blue-400 rounded-3xl px-3 py-2 break-words 
                                                     ${chatsStore.currentChats[index - 1]?.userReceiveId === contactsStore.selectedContact.id ? "rounded-tr-md my-[1px]" : "my-0.5 "}
                                                     ${chatsStore.currentChats[index + 1]?.userReceiveId === contactsStore.selectedContact.id ? "rounded-br-md my-[1px]" : "my-0.5 "}`}>
-                                                            <p className="w-fit max-w-[50vw] sm:max-w-[30vw] text-base font-light text-white">{chat.messages.value}</p>
+                                                            <p className="w-fit max-w-[50vw] sm:max-w-[30vw] text-base font-light text-white">{chat.messages?.value || chat.calls?.value}</p>
                                                         </div>
                                                     </div>
                                                     : <div className="message reciver flex" >
                                                         <div className={`content w-fit bg-[#E4E6EB] rounded-3xl px-3 py-2 break-words 
                                                     ${chatsStore.currentChats[index - 1]?.userSendId === contactsStore.selectedContact.id ? "rounded-tl-md my-[1px] " : "my-0.5"} 
                                                     ${chatsStore.currentChats[index + 1]?.userSendId === contactsStore.selectedContact.id ? "rounded-bl-md my-[1px]" : "my-0.5"}`}>
-                                                            <p className="w-fit max-w-[50vw] sm:max-w-[30vw] text-base font-light">{chat.messages.value}</p>
+                                                            <p className="w-fit max-w-[50vw] sm:max-w-[30vw] text-base font-light">{chat.messages?.value || chat.calls?.value}</p>
                                                         </div>
                                                     </div>}
                                             </div>
@@ -133,19 +171,19 @@ export default function ChatsContainer() {
                                 <FunctionButton
                                     className="fa-solid text-lg fa-circle-plus text-blue-400"
                                     size={36}
-                                    Icon={KeyboardArrowLeftIcon}
+                                    Icon={AddIcon}
 
                                 />
                                 <FunctionButton
                                     className="fa-regular text-lg fa-image text-blue-400"
                                     size={36}
-                                    Icon={KeyboardArrowLeftIcon}
+                                    Icon={AddPhotoAlternateIcon}
 
                                 />
                                 <FunctionButton
                                     className="fa-solid text-lg fa-gif text-blue-400"
                                     size={36}
-                                    Icon={KeyboardArrowLeftIcon}
+                                    Icon={GifBoxIcon}
 
                                 />
                             </div>
@@ -166,7 +204,7 @@ export default function ChatsContainer() {
                                         onClick={handleEmojiPickerhideShow}
                                         className="fa-solid fa-face-smile text-lg text-blue-400"
                                         size={36}
-                                        Icon={KeyboardArrowLeftIcon}
+                                        Icon={EmojiEmotionsIcon}
 
                                     />
                                 </div>
@@ -176,7 +214,7 @@ export default function ChatsContainer() {
                                     onClick={sendChat}
                                     className="text-lg fa-solid fa-paper-plane-top text-blue-400"
                                     size={36}
-                                    Icon={KeyboardArrowLeftIcon}
+                                    Icon={SendIcon}
 
                                 />
                             </div>
